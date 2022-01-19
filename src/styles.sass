@@ -1,1 +1,59 @@
-/* You can add global styles to this file, and also import other style files */
+.height
+    &_100
+        height: 100% !important
+
+.width
+    &_100
+        width: 100% !important
+
+.display
+    &_grid
+        display: grid
+
+    &_block
+        display: block
+
+.border
+    &-radius
+        &_10px
+            border-radius: 10px
+
+.background
+    &-color
+        &_whitesmoke
+            background-color: #f5f5f5
+        
+        &_white
+            background-color: #fff
+
+.padding
+    &_10px
+        padding: 10px
+
+    &_20px
+        padding: 20px
+
+.margin
+    &_0
+        margin: 0
+
+.gap
+    &_10px
+        gap: 10px
+
+.row-gap
+    &_20px
+        row-gap: 20px
+
+.block-shadow
+    box-shadow: 0 0 20px 0px rgb(0, 0, 0, 0.05)
+
+body
+    @extend .background-color_whitesmoke
+    @etend .margin_0
+    @extend .padding_20px
+    max-height: calc(100vh - 40px)
+
+.mat-form-field_disable-padding-bottom
+    .mat-form-field-wrapper
+        padding-bottom: 0
