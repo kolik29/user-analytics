@@ -9,10 +9,7 @@ interface iUserAnalytic {
       top: number
       bottom: number
     }
-    series: [{
-      value: number
-      timestamp: number
-    }]
+    series: number[][]
   }]
 }
 
@@ -23,28 +20,41 @@ interface iUserAnalytic {
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
+    for (var userIndex = 0; userIndex < 8; userIndex++) {
+      let userAnalytic: any = {
+        id: userIndex,
+        title: 'Пользователь ' + (userIndex + 1),
+        data: []
+      }
 
-  userAnalytics: iUserAnalytic[] | null = null
+      for (var indicatorIndex = 0; indicatorIndex < 12; indicatorIndex++) {
+        let charts: number[][] = [];
+      
+        for (let i = 0; i < 10; i++) {
+          let r = Math.floor(0 + Math.random() * 101);
+          let t = Math.floor(1392760800000 + Math.random() * (1642669354000 - 1392760800000));
+          
+          charts.push([t, r]);
+        }
+
+        userAnalytic.data.push({
+          title: 'Показатель ' + (indicatorIndex + 1),
+          border: {
+            top: 50 + Math.random() * 50,
+            bottom: Math.random() * 50
+          },
+          series: charts
+        });
+      }
+
+      this.userAnalytics.push(userAnalytic);
+    }
+  }
+
+  userAnalytics: iUserAnalytic[] = [];
 
   ngOnInit(): void {
-    if (this.userAnalytics == null) {
-      this.userAnalytics = [{
-        id: 0,
-        title: 'Пользоватлель 1',
-        data: [{
-          title: 'Показатель 1',
-          border: {
-            top: 80,
-            bottom: 30
-          },
-          series: [{
-            value: 1,
-            timestamp: 10
-          }]
-        }]
-      }]
-    }
   }
 
 }

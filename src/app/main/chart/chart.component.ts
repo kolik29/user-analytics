@@ -1,12 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import * as Highcharts from 'highcharts';
+import { Component, Input, OnInit } from '@angular/core';
 
-interface iSeries {
-  data: number[]
-  type: string
-  name: string
-  color?: string
-}
+import * as Highcharts from "highcharts/highstock";
+
+declare var require: any;
+let HIndicatorsAll = require('highcharts/indicators/indicators-all');
+let HDragPanes = require('highcharts/modules/drag-panes');
+let HAnnotationsAdvanced = require('highcharts/modules/annotations-advanced');
+let HPriceIndicator = require('highcharts/modules/price-indicator');
+let HFullScreen = require('highcharts/modules/full-screen');
+let HStockTools = require('highcharts/modules/stock-tools');
+
+HIndicatorsAll(Highcharts);
+HDragPanes(Highcharts);
+HAnnotationsAdvanced(Highcharts);
+HPriceIndicator(Highcharts);
+HFullScreen(Highcharts);
+HStockTools(Highcharts);
 
 @Component({
   selector: 'app-chart',
@@ -14,33 +23,28 @@ interface iSeries {
   styleUrls: ['./chart.component.sass']
 })
 export class ChartComponent implements OnInit {
-  seriesData: number[] = [];
-  series: iSeries[] | null = null;
-  defaultOptions: any = {}
-  Highcharts: typeof Highcharts = Highcharts;
-  chartOptions: Highcharts.Options;
+  highchartsDetail: typeof Highcharts = Highcharts;
+  chartOptionsDetail: Highcharts.Options;
+  updateFlag: boolean = false;
+  
+  @Input() userAnalytics: any;
   
   constructor() {
-    let charts: number[][][] = [[[], []], [[], []], [[], []]];
+  }
+  
+  ngOnInit(): void {
+    const self = this;
 
-    for (let  i = 0; i < 999; i++) {
-      let r = Math.floor(0 + Math.random() * 101);
-
-      if (r > 80)
-        charts[0].push([i, r]);
-      else if (r < 30)
-        charts[2].push([i, r]);
-      else
-        charts[1].push([i, r]);
-    }
-
-    this.defaultOptions = {
+    let _chartOptionsDetail: Highcharts.Options = {
       title: {
         text: ''
       },
       xAxis: {
-        title: {
-          text: ''
+        type: 'datetime',
+        labels: {
+          formatter: function(obj) {
+            return Highcharts.dateFormat('%d.%m.%Y', Number(obj.value));
+          }
         }
       },
       yAxis: {
@@ -55,39 +59,47 @@ export class ChartComponent implements OnInit {
         scatter: {
           tooltip: {
             headerFormat: '<b>{series.name}</b><br>',
-            pointFormat: 'Показатель 1: {point.x}'
+            pointFormat: 'Значение: {point.y}'
           }
         }
       },
-      series: [{
-        name: 'Пользователь 1',
-        color: 'rgba(255, 0, 0, 1)',
-        data: charts[0],
-        type: 'scatter',
-        marker: {
-          symbol: 'circle'
+      navigator: {
+        series: {
+          type: 'scatter',
+          lineWidth: 0,
         }
-      }, {
-        name: 'Пользователь 1',
-        data: charts[1],
-        type: 'scatter',
-        marker: {
-          symbol: 'circle'
-        }
-      }, {
-        name: 'Пользователь 1',
-        color: 'rgba(255, 0, 0, 1)',
-        data: charts[2],
-        type: 'scatter',
-        marker: {
-          symbol: 'circle'
-        }
-      }]
+      },
+      rangeSelector: {
+        selected: 1,
+      },
+      series: []
     }
 
-    this.chartOptions = this.defaultOptions;
+    this.userAnalytics.forEach(userAnalytic => {
+      userAnalytic.data.forEach(data => {
+        _chartOptionsDetail.series?.push({
+          name: userAnalytic.title + ' | ' + data.title,
+          zones: [
+            {
+              value: data.border.bottom,
+              color: '#ff0000'
+            },
+            {
+              value: data.border.top
+            },
+            {
+              color: '#ff0000'
+            }
+          ],
+          data: data.series,
+          type: 'scatter',
+          marker: {
+            symbol: 'circle'
+          }
+        });
+      });
+    });
+    
+    this.chartOptionsDetail = _chartOptionsDetail;
   }
-
-  ngOnInit(): void {
-  }  
 }
